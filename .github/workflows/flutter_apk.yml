@@ -22,7 +22,7 @@ jobs:
         run: pwd && ls -la
 
       - name: 📦 Install Dependencies
-        run: cd Riddle-realm && flutter pub get
+        run: flutter pub get
 
       - name: 🏗️ Build APK
         run: flutter build apk --release
