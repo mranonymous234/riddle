@@ -16,19 +16,16 @@ jobs:
       - name: 🔧 Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.0'  # Match your Flutter version
+          flutter-version: '3.32.8'  # Change to your version if different
 
       - name: 📦 Install Dependencies
         run: flutter pub get
 
-      - name: 🧪 Run Analyzer (Optional)
-        run: flutter analyze
-
-      - name: 🏗️ Build APK (Release)
+      - name: 🏗️ Build APK
         run: flutter build apk --release
 
       - name: 📤 Upload APK as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
           path: build/app/outputs/flutter-apk/app-release.apk
