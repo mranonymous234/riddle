@@ -8,7 +8,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^0.13.0
-  audioplayers: ^2.0.4
+  audioplayers: ^5.2.1
 
 flutter:
   uses-material-design: true
