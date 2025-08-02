@@ -1,37 +1,26 @@
 workflows:
-  build-signed-ipa:
-    name: Build Signed IPA for Sideloading
+  build-ios-app:
+    name: Build Unsigned iOS App (.app)
     environment:
       flutter: stable
       xcode: latest
-
     scripts:
       - name: initial Creation
         script: flutter create .
         
-      - name: Install dependencies
+      - name: Install Flutter packages
         script: |
           flutter pub get
-          flutter pub run flutter_launcher_icons:main
 
-      - name: Install certificate and provisioning profile
+      - name: Build iOS unsigned .app
         script: |
-          security create-keychain -p "temp" ios-build.keychain
-          security default-keychain -s ios-build.keychain
-          security unlock-keychain -p "temp" ios-build.keychain
+          flutter build ios --release --no-codesign
 
-          # Import your P12
-          security import certs/ios_distribution.p12 -k ios-build.keychain -P "1" -T /usr/bin/codesign
-
-          # Copy the provisioning profile
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp certs/provisioning.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-
-      - name: Build signed IPA
+      - name: Zip Runner.app
         script: |
-          flutter build ipa \
-            --release \
-            --export-options-plist=ios/ExportOptions.plist
+          cd build/ios/iphoneos
+          zip -r Runner.zip Runner.app
+          mv Runner.zip ../../../Runner.zip
 
     artifacts:
-      - build/ios/ipa/*.ipa
+      - Runner.zip
