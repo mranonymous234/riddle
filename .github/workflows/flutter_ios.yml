@@ -1,4 +1,4 @@
-name: Build Linux DEB Package
+name: Build Linux tar.gz Package
 
 on:
   push:
@@ -6,27 +6,13 @@ on:
       - main
 
 jobs:
-  build-linux-deb:
-    name: Build .deb on Ubuntu
+  build-tarball:
+    name: Build .tar.gz on Ubuntu
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout source
         uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libgtk-3-dev \
-            clang \
-            cmake \
-            ninja-build \
-            pkg-config \
-            libglib2.0-dev \
-            libgtk-3-dev \
-            liblzma-dev \
-            libstdc++-12-dev
 
       - name: Install Flutter
         uses: subosito/flutter-action@v2
@@ -36,55 +22,22 @@ jobs:
       - name: initial creation
         run: flutter create .
 
-      - name: Enable Linux support
+      - name: Enable Linux desktop support
         run: flutter config --enable-linux-desktop
 
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build Linux release
+      - name: Build Flutter app for Linux
         run: flutter build linux --release
 
-      - name: Prepare DEB folder structure
+      - name: Create tar.gz package
         run: |
-          mkdir -p deb_pkg/DEBIAN
-          mkdir -p deb_pkg/usr/bin
-          mkdir -p deb_pkg/usr/share/myapp
-          mkdir -p deb_pkg/usr/share/applications
-          mkdir -p deb_pkg/usr/share/icons/hicolor/128x128/apps
+          mkdir output
+          tar -czvf output/myapp-linux.tar.gz -C build/linux/x64/release/bundle .
 
-          cp build/linux/x64/release/bundle/riddle_realms deb_pkg/usr/bin/myapp
-          cp -r build/linux/x64/release/bundle/* deb_pkg/usr/share/myapp/
-
-          # Add desktop launcher
-          echo "[Desktop Entry]
-          Name=MyApp
-          Comment=A Flutter Desktop App
-          Exec=/usr/bin/myapp
-          Icon=myapp
-          Terminal=false
-          Type=Application
-          Categories=Utility;" > deb_pkg/usr/share/applications/myapp.desktop
-
-          # (Optional) Icon
-          touch deb_pkg/usr/share/icons/hicolor/128x128/apps/myapp.png
-
-          # Control file
-          echo "Package: myapp
-          Version: 1.0.0
-          Section: base
-          Priority: optional
-          Architecture: amd64
-          Depends: libgtk-3-0
-          Maintainer: Your Name <you@example.com>
-          Description: A simple Flutter desktop app packaged as a .deb
-          " > deb_pkg/DEBIAN/control
-
-      - name: Build .deb package
-        run: dpkg-deb --build deb_pkg myapp_1.0.0_amd64.deb
-
-      - name: Upload .deb as artifact
+      - name: Upload tar.gz artifact
         uses: actions/upload-artifact@v4
         with:
-          name: myapp-deb
-          path: myapp_1.0.0_amd64.deb
+          name: myapp-tarball
+          path: output/myapp-linux.tar.gz
