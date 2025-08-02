@@ -5,12 +5,13 @@ workflows:
       flutter: stable
       xcode: latest
     scripts:
-      - name: Install dependencies
-        script: flutter pub get && flutter pub run flutter_launcher_icons:main
 
       - name: Fully initialize app
         script: flutter create .
 
+      - name: Install dependencies
+        script: flutter pub get && flutter pub run flutter_launcher_icons:main
+        
       - name: Build unsigned IPA
         script: flutter build ipa --no-codesign
 
