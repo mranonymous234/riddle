@@ -6,7 +6,7 @@ workflows:
       xcode: latest
     scripts:
       - name: Install dependencies
-        script: flutter pub get
+        script: flutter pub get && flutter pub run flutter_launcher_icons:main
 
       - name: Fully initialize app
         script: flutter create .
