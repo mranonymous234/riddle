@@ -53,7 +53,7 @@ jobs:
           mkdir -p deb_pkg/usr/share/applications
           mkdir -p deb_pkg/usr/share/icons/hicolor/128x128/apps
 
-          cp build/linux/x64/release/bundle/my_flutter_app deb_pkg/usr/bin/myapp
+          cp build/linux/x64/release/bundle/riddle_realms deb_pkg/usr/bin/myapp
           cp -r build/linux/x64/release/bundle/* deb_pkg/usr/share/myapp/
 
           # Add desktop launcher
