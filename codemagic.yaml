@@ -6,6 +6,9 @@ workflows:
       xcode: latest
 
     scripts:
+      - name: initial Creation
+        script: flutter create .
+        
       - name: Install dependencies
         script: |
           flutter pub get
