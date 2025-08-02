@@ -8,6 +8,9 @@ workflows:
       - name: Install dependencies
         script: flutter pub get
 
+      - name: Fully initialize app
+        script: flutter create .
+
       - name: Build unsigned IPA
         script: flutter build ipa --no-codesign
 
