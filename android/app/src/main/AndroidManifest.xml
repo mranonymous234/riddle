@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.riddle_realms">
+    package="com.chenul.riddlerealms">
 
     <!-- ✅ Internet permission for API calls -->
     <uses-permission android:name="android.permission.INTERNET" />
