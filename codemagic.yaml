@@ -1,26 +1,23 @@
 workflows:
-  build-ios-app:
-    name: Build Unsigned iOS App (.app)
+  build-macos-app:
+    name: Build macOS .app
+    max_build_duration: 30
     environment:
       flutter: stable
       xcode: latest
+      cocoapods: default
     scripts:
       - name: initial Creation
         script: flutter create .
         
-      - name: Install Flutter packages
-        script: |
-          flutter pub get
-
-      - name: Build iOS unsigned .app
-        script: |
-          flutter build ios --release --no-codesign
-
-      - name: Zip Runner.app
-        script: |
-          cd build/ios/iphoneos
-          zip -r Runner.zip Runner.app
-          mv Runner.zip ../../../Runner.zip
-
+      - name: Enable macOS desktop
+        script: flutter config --enable-macos-desktop
+        
+      - name: Get dependencies
+        script: flutter pub get
+        
+      - name: Build macOS app
+        script: flutter build macos --release
+        
     artifacts:
-      - Runner.zip
+      - build/macos/Build/Products/Release/*.app
