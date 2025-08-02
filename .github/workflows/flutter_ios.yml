@@ -1,4 +1,4 @@
-name: Build Flutter Windows App
+name: Build Linux DEB Package
 
 on:
   push:
@@ -6,31 +6,71 @@ on:
       - main
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  build-linux-deb:
+    name: Build .deb on Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.32.8'
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.8'
 
-    - name: initial Creation
-      run: flutter create .
+      - name: initial creation
+        run: flutter create .
 
-    - name: Enable Windows Desktop
-      run: flutter config --enable-windows-desktop
+      - name: Enable Linux support
+        run: flutter config --enable-linux-desktop
 
-    - name: Get dependencies
-      run: flutter pub get
+      - name: Get dependencies
+        run: flutter pub get
 
-    - name: Build Windows Release
-      run: flutter build windows --release
+      - name: Build Linux release
+        run: flutter build linux --release
 
-    - name: Upload exe artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-exe
-        path: build/windows/x64/runner/Release/*.exe
+      - name: Prepare DEB folder structure
+        run: |
+          mkdir -p deb_pkg/DEBIAN
+          mkdir -p deb_pkg/usr/bin
+          mkdir -p deb_pkg/usr/share/myapp
+          mkdir -p deb_pkg/usr/share/applications
+          mkdir -p deb_pkg/usr/share/icons/hicolor/128x128/apps
+
+          cp build/linux/x64/release/bundle/my_flutter_app deb_pkg/usr/bin/myapp
+          cp -r build/linux/x64/release/bundle/* deb_pkg/usr/share/myapp/
+
+          # Add desktop launcher
+          echo "[Desktop Entry]
+          Name=MyApp
+          Comment=A Flutter Desktop App
+          Exec=/usr/bin/myapp
+          Icon=myapp
+          Terminal=false
+          Type=Application
+          Categories=Utility;" > deb_pkg/usr/share/applications/myapp.desktop
+
+          # (Optional) Icon
+          touch deb_pkg/usr/share/icons/hicolor/128x128/apps/myapp.png
+
+          # Control file
+          echo "Package: myapp
+          Version: 1.0.0
+          Section: base
+          Priority: optional
+          Architecture: amd64
+          Depends: libgtk-3-0
+          Maintainer: Your Name <you@example.com>
+          Description: A simple Flutter desktop app packaged as a .deb
+          " > deb_pkg/DEBIAN/control
+
+      - name: Build .deb package
+        run: dpkg-deb --build deb_pkg myapp_1.0.0_amd64.deb
+
+      - name: Upload .deb as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: myapp-deb
+          path: myapp_1.0.0_amd64.deb
