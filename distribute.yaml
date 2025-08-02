@@ -1,0 +1,9 @@
+name: my_flutter_app
+version: 1.0.0
+
+platforms:
+  linux:
+    packaging:
+      - rpm
+      - appimage
+      - flatpak
