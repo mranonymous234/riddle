@@ -14,5 +14,13 @@ workflows:
       - name: Build unsigned IPA
         script: flutter build ipa --no-codesign
 
+      - name: Export IPA manually from archive
+        script: |
+          mkdir -p build/ios/ipa
+          xcrun xcodebuild -exportArchive \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -exportPath build/ios/ipa \
+            -exportOptionsPlist ios/ExportOptions.plist
+
     artifacts:
       - build/ios/ipa/*.ipa
