@@ -22,7 +22,7 @@ jobs:
         run: flutter create .
 
       - name: 📦 Install Dependencies
-        run: flutter pub get
+        run: flutter pub get && flutter pub run flutter_launcher_icons:main
 
       - name: 🏗️ Build APK
         run: flutter build apk --release
