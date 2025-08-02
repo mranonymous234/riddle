@@ -18,7 +18,7 @@ workflows:
           security unlock-keychain -p "temp" ios-build.keychain
 
           # Import your P12
-          security import certs/ios_distribution.p12 -k ios-build.keychain -P "YOUR_CERT_PASSWORD" -T /usr/bin/codesign
+          security import certs/ios_distribution.p12 -k ios-build.keychain -P "1" -T /usr/bin/codesign
 
           # Copy the provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
