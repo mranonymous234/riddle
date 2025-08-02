@@ -5,24 +5,29 @@ workflows:
       flutter: stable
       xcode: latest
     scripts:
-
       - name: Fully initialize app
         script: flutter create .
 
       - name: Install dependencies
         script: flutter pub get && flutter pub run flutter_launcher_icons:main
-        
-      - name: Build unsigned IPA
-        script: flutter build ipa --no-codesign
+    
+       - name: Install certificate and provisioning profile
+         script: |
+           security create-keychain -p "temp" ios-build.keychain
+           security default-keychain -s ios-build.keychain
+           security unlock-keychain -p "temp" ios-build.keychain
 
-      - name: Export IPA manually
-        script: |
-          mkdir -p build/ios/ipa
-          xcrun xcodebuild -exportArchive \
-            -archivePath build/ios/archive/Runner.xcarchive \
-            -exportPath build/ios/ipa \
-            -exportOptionsPlist ios/ExportOptions.plist \
-            -allowProvisioningUpdates
+           security import certs/ios_distribution.p12 -k ios-build.keychain -P "1" -T /usr/bin/codesign
+
+           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+           cp certs/provisioning.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+       - name: Build signed IPA
+         script: |
+            flutter build ipa \
+            --release \
+            --export-options-plist=ios/ExportOptions.plist
+
             
     artifacts:
       - build/ios/ipa/*.ipa
