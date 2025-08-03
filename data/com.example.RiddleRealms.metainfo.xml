@@ -1,0 +1,9 @@
+<component type="desktop">
+  <id>com.chenul.RiddleRealms</id>
+  <name>Riddle Realms</name>
+  <summary>Unsolvable Riddle generator</summary>
+  <description>
+    <p>Unsolvable riddle experience.</p>
+  </description>
+  <launchable type="desktop-id">riddle_realms.desktop</launchable>
+</component>
