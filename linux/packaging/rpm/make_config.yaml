@@ -1,11 +1,11 @@
 name: riddle_realms
 version: 1.0.0
-summary: A poetic riddle app
+summary: Riddle Realms Flutter App
 description: |
-  Riddle Realms is a cross-platform poetic riddle app written in Flutter.
+  Riddle Realms is a poetic riddle app built using Flutter.
 arch: x86_64
-maintainer: Your Name <you@example.com>
 category: utility
+maintainer: Cool Geek <you@example.com>
 license: MIT
 depends:
   - libgtk-3-0
