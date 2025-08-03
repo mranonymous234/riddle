@@ -14,7 +14,7 @@ workflows:
           sudo snap install snapcraft --classic
 
       - name: initial creation
-        run: flutter create .
+        script: flutter create .
 
       - name: Enable Linux Desktop
         script: flutter config --enable-linux-desktop
