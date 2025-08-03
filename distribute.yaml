@@ -1,9 +1,22 @@
-name: riddle_realms
-version: 1.0.0
+name: riddle-realms
+version: '1.0.0'
+summary: Poetic riddle generator app
+description: |
+  Riddle Realms is a poetic riddle app built with Flutter.
 
-platforms:
-  linux:
-    packaging:
-      - rpm
-      - appimage
-      - flatpak
+base: core22
+confinement: strict
+grade: stable
+
+architectures:
+  - amd64
+
+apps:
+  riddle-realms:
+    command: riddle_realms
+    extensions: [flutter-dev]
+
+parts:
+  riddle-realms:
+    plugin: dump
+    source: build/linux/x64/release/bundle
