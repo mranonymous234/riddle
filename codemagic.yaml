@@ -24,7 +24,7 @@ workflows:
         script: |
           cd build/macos/Build/Products/Release
           hdiutil create -volname "RiddleRealms" \
-            -srcfolder "RiddleRealms.app" \
+            -srcfolder "riddle_realms.app" \
             -ov -format UDZO RiddleRealms.dmg
 
     artifacts:
