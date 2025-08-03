@@ -5,7 +5,7 @@ description: |
   Riddle Realms is a poetic riddle app built using Flutter.
 arch: x86_64
 category: utility
-maintainer: Cool Geek <you@example.com>
+maintainer: Cool Geek bullumulla@gmail.com
 license: MIT
 depends:
   - libgtk-3-0
