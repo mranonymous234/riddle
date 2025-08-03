@@ -1,12 +1,12 @@
-name: Build Linux Packages
+name: Package Linux Flutter App (Manual)
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
-  package-linux:
-    name: Package for Linux (.rpm, .AppImage, .flatpak)
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,30 +21,58 @@ jobs:
       - name: initial creation
         run: flutter create .
 
-      - name: Enable Linux support
+      - name: Enable Linux build
         run: flutter config --enable-linux-desktop
 
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Install system dependencies
+      - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y \
-            libgtk-3-dev libglib2.0-dev \
-            patchelf rpm flatpak \
-            desktop-file-utils squashfs-tools
+          sudo apt install -y rpm appimagetool libgtk-3-dev libfuse2
 
-      - name: Install flutter_distributor
-        run: dart pub global activate flutter_distributor
+      - name: Build Flutter Linux app
+        run: flutter build linux --release
 
-      - name: Build all Linux packages
+      - name: Prepare RPM package
         run: |
-          export PATH="$PATH:$HOME/.pub-cache/bin"
-          flutter_distributor package --platform linux --targets rpm,appimage,flatpak
+          mkdir -p myapp-root/opt/riddle_realms
+          cp -r build/linux/x64/release/bundle/* myapp-root/opt/riddle_realms/
+          mkdir -p rpm-build/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+          cat <<EOF > rpm-build/SPECS/riddle_realms.spec
+          Name:           riddle_realms
+          Version:        1.0.0
+          Release:        1%{?dist}
+          Summary:        Riddle Realms Flutter App
+          License:        MIT
+          URL:            https://github.com/your/repo
+          BuildArch:      x86_64
+
+          %description
+          Riddle Realms is a poetic riddle app built using Flutter.
+
+          %files
+          /opt/riddle_realms
+          EOF
+          rpmbuild -bb rpm-build/SPECS/riddle_realms.spec --buildroot="$(pwd)/myapp-root" --define "_topdir $(pwd)/rpm-build"
+
+      - name: Prepare AppImage package
+        run: |
+          mkdir -p AppDir/usr/bin
+          cp build/linux/x64/release/bundle/riddle_realms AppDir/usr/bin/
+          cp build/linux/x64/release/bundle/data/flutter_assets/assets/icon.png AppDir/riddle_realms.png || true
+          cat <<EOF > AppDir/riddle_realms.desktop
+          [Desktop Entry]
+          Name=Riddle Realms
+          Exec=riddle_realms
+          Icon=riddle_realms
+          Type=Application
+          Categories=Utility;
+          EOF
+          appimagetool AppDir RiddleRealms-x86_64.AppImage
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-packages
-          path: build/distribute/linux/**
+          path: |
+            rpm-build/RPMS/x86_64/*.rpm
+            RiddleRealms-x86_64.AppImage
