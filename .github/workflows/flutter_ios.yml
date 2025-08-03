@@ -60,7 +60,7 @@ jobs:
         run: |
           mkdir -p AppDir/usr/bin
           cp build/linux/x64/release/bundle/riddle_realms AppDir/usr/bin/
-          cp build/linux/x64/release/bundle/data/flutter_assets/assets/icon/icon.png AppDir/riddle_realms.png || true
+          cp assets/icon/icon.png AppDir/riddle_realms.png || true
           cat <<EOF > AppDir/riddle_realms.desktop
           [Desktop Entry]
           Name=Riddle Realms
