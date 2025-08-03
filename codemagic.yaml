@@ -1,39 +1,31 @@
 workflows:
-  linux_build_and_package:
-    name: Build & Package Linux Flutter App
-    max_build_duration: 30
+  build_and_package:
+    name: Build macOS app and create DMG
     environment:
       flutter: stable
-      vars:
-        FLUTTER_TARGET: "lib/main.dart"
+      xcode: latest
     scripts:
-      - name: Install system dependencies
-        script: |
-          sudo apt-get update
-          sudo apt-get install -y snapd flatpak flatpak-builder libfuse2
-          sudo snap install snapcraft --classic
-
       - name: initial creation
         script: flutter create .
 
-      - name: Enable Linux Desktop
-        script: flutter config --enable-linux-desktop
-
-      - name: Get dependencies
-        script: flutter pub get
-
-      - name: Build Linux app
-        script: flutter build linux --release
-
-      - name: Build Snap package
+      - name: Install dependencies
         script: |
-          snapcraft
+          flutter pub get
 
-      - name: Build Flatpak
+      - name: Enable macOS desktop
         script: |
-          flatpak-builder --force-clean build-dir riddle-realms.flatpak.yaml
-          flatpak build-bundle build-dir riddle-realms.flatpak com.example.RiddleRealms.flatpak
+          flutter config --enable-macos-desktop
+
+      - name: Build .app
+        script: |
+          flutter build macos --release
+
+      - name: Create .dmg
+        script: |
+          cd build/macos/Build/Products/Release
+          hdiutil create -volname "RiddleRealms" \
+            -srcfolder "RiddleRealms.app" \
+            -ov -format UDZO RiddleRealms.dmg
 
     artifacts:
-      - riddle-realms_*.snap
-      - com.example.RiddleRealms.flatpak
+      - build/macos/Build/Products/Release/RiddleRealms.dmg
