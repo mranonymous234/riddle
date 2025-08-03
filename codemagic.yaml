@@ -1,23 +1,39 @@
 workflows:
-  build-macos-app:
-    name: Build macOS .app
+  linux_build_and_package:
+    name: Build & Package Linux Flutter App
     max_build_duration: 30
     environment:
       flutter: stable
-      xcode: latest
-      cocoapods: default
+      vars:
+        FLUTTER_TARGET: "lib/main.dart"
     scripts:
-      - name: initial Creation
-        script: flutter create .
-        
-      - name: Enable macOS desktop
-        script: flutter config --enable-macos-desktop
-        
+      - name: Install system dependencies
+        script: |
+          sudo apt-get update
+          sudo apt-get install -y snapd flatpak flatpak-builder libfuse2
+          sudo snap install snapcraft --classic
+
+      - name: initial creation
+        run: flutter create .
+
+      - name: Enable Linux Desktop
+        script: flutter config --enable-linux-desktop
+
       - name: Get dependencies
         script: flutter pub get
-        
-      - name: Build macOS app
-        script: flutter build macos --release
-        
+
+      - name: Build Linux app
+        script: flutter build linux --release
+
+      - name: Build Snap package
+        script: |
+          snapcraft
+
+      - name: Build Flatpak
+        script: |
+          flatpak-builder --force-clean build-dir riddle-realms.flatpak.yaml
+          flatpak build-bundle build-dir riddle-realms.flatpak com.example.RiddleRealms.flatpak
+
     artifacts:
-      - build/macos/Build/Products/Release/*.app
+      - riddle-realms_*.snap
+      - com.example.RiddleRealms.flatpak
