@@ -1,0 +1,34 @@
+app-id: com.chenul.RiddleRealms
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+command: riddle_realms
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --filesystem=home
+
+modules:
+  - name: flutter-sdk
+    buildsystem: simple
+    build-commands:
+      - git clone https://github.com/flutter/flutter.git -b stable flutter
+      - ./flutter/bin/flutter doctor
+    sources:
+      - type: git
+        url: https://github.com/flutter/flutter.git
+        branch: stable
+
+  - name: riddle_realms
+    buildsystem: simple
+    build-commands:
+      - ./flutter/bin/flutter config --enable-linux-desktop
+      - ./flutter/bin/flutter pub get
+      - ./flutter/bin/flutter build linux --release
+      - install -D build/linux/x64/release/bundle/riddle_realms /app/bin/riddle_realms
+    sources:
+      - type: dir
+        path: .
