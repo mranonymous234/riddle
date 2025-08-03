@@ -28,7 +28,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y rpm libgtk-3-dev libfuse2
-          wget -O appimagetool https://github.com/AppImage/AppImageKit/releases/latest/download/appimagetool-x86_64.AppImage
+          wget -O appimagetool https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
           chmod +x appimagetool
 
       - name: Build Flutter Linux app
